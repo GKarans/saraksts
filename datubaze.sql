@@ -18,7 +18,7 @@ CREATE TABLE saraksts(
 CREATE TABLE ieraksts(
     id int(11) NOT NULL AUTO_INCREMENT,
     teksts varchar(100) NOT NULL,
-    izsvitrots BOOL DEFAULT 0,
+    izsvitrots BOOLEAN DEFAULT 0,
     saraksts_id int(11),
     PRIMARY KEY (id),
     FOREIGN KEY (saraksts_id) REFERENCES saraksts(id)
