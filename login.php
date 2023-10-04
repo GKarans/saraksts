@@ -5,8 +5,36 @@
     if(isset($_SESSION['username'])){
         header("Location: home.php");
     }
-    if(isset($_POST['register'])){
+    if(isset($_POST['login'])){
+        # atrodam lietotāju
+        $query = $datubaze->prepare('
+            SELECT *
+            FROM lietotajs
+            WHERE lietotajvards = ?
+        ');
+        $query->bind_param('s',$_POST['username']);
+        $query->execute();
+        $result = $query->get_result();
 
+        if($result->num_rows == 0){
+            # Autorizācijas kļūdās jāizvairās no jebkādas lietotāja informācijas izpaušanas! Pat, ja konkrētais lietotājs neeksistē
+            $error = 'Nepareizs lietotājvārds un/vai parole!';
+        }else{
+
+            $lietotajs = $result->fetch_object();
+
+            if(password_verify($_POST['password'],$lietotajs->parole)){
+                $_SESSION['username'] = $lietotajs->lietotajvards;
+                $_SESSION['email'] = $lietotajs->epasts;
+                $_SESSION['phone'] = $lietotajs->tel_nr;
+                $_SESSION['role'] = $lietotajs->loma;
+
+                header('Location: home.php');
+            }else{
+                # nepareiza parole
+                $error = 'Nepareizs lietotājvārds un/vai parole!';
+            }
+        }
     }
 ?>
 <!DOCTYPE html>
