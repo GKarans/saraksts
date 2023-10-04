@@ -1,4 +1,6 @@
 <?php 
+    session_start();
+# https://github.com/Filipssh/saraksts/commit/95a16b6bddc76f398bedb84777e2fd45b9889221
     require_once "connection.php";
     if(isset($_POST['register'])){
         # vaicājums datubāzei, vai lietotājs ar šādu vārdu jau eksistē.
@@ -29,9 +31,21 @@
             $query->bind_param('ssss',$_POST['username'],$password,$_POST['email'],$_POST['phone']);
             $query->execute();
 
-        }
+            if($query->error == ''){
+                # $_SESSION superglobāls mainīgais
+                # kāmēr pārlūkprogramma ir atvērta, vai iztek neaktivitātes laiks.
+                $_SESSION['username'] = $_POST['username'];
+                $_SESSION['email'] = $_POST['email'];
+                $_SESSION['phone'] = $_POST['phone'];
+                $_SESSION['role'] = 'lietotajs';
+                # TODO: paziņot, ka lietotājs izveidots (pāradresēt uz index.php)
 
-        # TODO: paziņot, ka lietotājs izveidots (pāradresēt uz index.php)
+                header('Location: home.php');
+
+            }else{
+                $error = "Izveidojusies neparedzēta kļūda, lūdzu mēģiniet vēlreiz";
+            }
+        }
     }
 ?>
 <!DOCTYPE html>
