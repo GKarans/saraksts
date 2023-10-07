@@ -82,15 +82,15 @@
                             ?>
                             <div class="mb-3">
                                 <label for="username" class="form-label">Lietotājvārds</label>
-                                <input type="text" class="form-control" id="username" name="username" required value="<?php echo $_POST['username'] ?? '' ?>">
+                                <input type="text" class="form-control" id="username" name="username" required value="<?php echo htmlspecialchars($_POST['username']) ?? '' ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">E-pasts</label>
-                                <input type="email" class="form-control" id="email" name="email" required value="<?php echo $_POST['email'] ?? '' ?>">
+                                <input type="email" class="form-control" id="email" name="email" required value="<?php echo htmlspecialchars($_POST['email']) ?? '' ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Tel. numurs</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" value="<?php echo $_POST['phone'] ?? '' ?>">
+                                <input type="tel" class="form-control" id="phone" name="phone" value="<?php echo htmlspecialchars($_POST['phone']) ?? '' ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Parole</label>

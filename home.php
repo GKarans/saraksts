@@ -66,7 +66,7 @@
             <div class="col-lg-3 col-md-6 mb-3">
                 <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title"><?php echo $saraksts->nosaukums; ?></h5>
+                    <h5 class="card-title"><?php echo htmlspecialchars($saraksts->nosaukums); ?></h5>
                     <p class="card-text">
                         <?php 
                             $query2->bind_param('i',$saraksts->id);
@@ -75,11 +75,11 @@
                             while($ieraksts = $ieraksti->fetch_object()){
                                 $klase = "class=\"text-decoration-line-through\"";
                                 $klase = ($ieraksts->izsvitrots == 1) ? $klase : '';
-                                echo "<span " . $klase . ">" . $ieraksts->teksts . "</span><br>";
+                                echo "<span " . $klase . ">" .  htmlspecialchars($ieraksts->teksts) . "</span><br>";
                             }
                         ?>
                     </p>
-                    <a href="saraksts.php?id=<?php echo $saraksts->id ?>" class="btn btn-primary">Apskatīt</a>
+                    <a href="saraksts.php?id=<?php echo  htmlspecialchars($saraksts->id) ?>" class="btn btn-primary">Apskatīt</a>
                 </div>
                 </div>
             </div>
