@@ -66,7 +66,7 @@
                             ?>
                             <div class="mb-3">
                                 <label for="username" class="form-label">Lietotājvārds</label>
-                                <input type="text" class="form-control" id="username" name="username" required value="<?php echo  htmlspecialchars($_POST['username']) ?? '' ?>">
+                                <input type="text" class="form-control" id="username" name="username" required value="<?php echo htmlspecialchars($_POST['username'] ?? '') ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Parole</label>
