@@ -43,7 +43,6 @@
                 $_SESSION['email'] = $_POST['email'];
                 $_SESSION['phone'] = $_POST['phone'];
                 $_SESSION['role'] = 'lietotajs';
-                # TODO: paziņot, ka lietotājs izveidots (pāradresēt uz index.php)
 
                 header('Location: home.php');
 

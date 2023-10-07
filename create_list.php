@@ -2,11 +2,13 @@
     session_start();
     require_once "connection.php";
 
+    // ja lietotājs nav autorizējies, tad pārvirzām uz autorizācijas lapu
     if(empty($_SESSION['username'])){
         header("Location: login.php");
     }
 
     if(isset($_POST['create'])){
+        // ievietojam jaunu rindu tabulā `saraksts`
         $query = $datubaze->prepare('
             INSERT INTO saraksts(nosaukums,lietotajvards)
             VALUES (?,?)
@@ -14,6 +16,7 @@
         $query->bind_param('ss',$_POST['listname'],$_SESSION['username']);
         $query->execute();
 
+        // pārvirzām uz saraksta lapu.  Papildus nododot jaunizveidotā saraksta id kā GET parametru
         header('Location: list.php?id=' . $query->insert_id);
     }
 ?>
@@ -32,7 +35,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Saraksta nosaukums</h4>
+                        <h4>Jauns saraksts</h4>
                     </div>
                     <div class="card-body">
                         <form method="POST">
