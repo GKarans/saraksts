@@ -58,16 +58,19 @@
 
                         <!-- Piemērs vienam ierakstam  -->
                         <!-- <li class="list-group-item">Nopirkt ballītei balonus</li> -->
-                        <?php 
-                            $query2->bind_param('i',$saraksts->id);
-                            $query2->execute();
-                            $ieraksti = $query2->get_result();
-                            while($ieraksts = $ieraksti->fetch_object()){
-                                $klase = "text-decoration-line-through";
-                                $klase = ($ieraksts->izsvitrots == 1) ? $klase : '';
-echo "<li class=\"list-group-item $klase\" data-id=\"$ieraksts->id\">" . htmlspecialchars($ieraksts->teksts) . "</li>";
-                            }
-                        ?>
+    <?php 
+    $query2->bind_param('i',$saraksts->id);
+    $query2->execute();
+    $ieraksti = $query2->get_result();
+    while($ieraksts = $ieraksti->fetch_object()):
+        $klase = "text-decoration-line-through";
+        $klase = ($ieraksts->izsvitrots == 1) ? $klase : '';
+    ?>
+    <li class="list-group-item d-flex justify-content-between align-items-center" data-id="<?php echo $ieraksts->id?>">
+        <span class="<?php echo $klase; ?>"><?php echo htmlspecialchars($ieraksts->teksts); ?></span>
+        <button class="btn btn-outline-danger" data-id="<?php echo $ieraksts->id?>">X</button>
+    </li>
+    <?php endwhile; ?>
                     </ul>
                 </div>
             </div>
@@ -103,8 +106,13 @@ echo "<li class=\"list-group-item $klase\" data-id=\"$ieraksts->id\">" . htmlspe
                         if(data.response == '200'){
                             // konstruējam <li> elementu
                             let li = document.createElement("li");
-                            li.classList.add("list-group-item");
-                            li.innerText = teksts.value;
+                            li.classList.add(
+                                "list-group-item",
+                                "d-flex",
+                                "justify-content-between",
+                                "align-items-center"
+                            );
+                            li.innerHTML = '<span> '+ teksts.value +' </span><button class="btn btn-outline-danger" data-id="' + data.id + '">X</button>';
                             li.setAttribute('data-id', data.id);
 
                             saraksts.appendChild(li);
@@ -124,7 +132,7 @@ echo "<li class=\"list-group-item $klase\" data-id=\"$ieraksts->id\">" . htmlspe
             // ne visi saraksta elementi ir pieejami, kad mēs ielādējam lapu, līdz ar to nepietiek ar to, ka uzstādam event listener dokumenta ielādēšanās brīdī
             // Izmantojot jQuery, deliģējam document objektu klausīties klikšķi uz kādu saraksta elementu
             // https://learn.jquery.com/events/event-delegation/
-            $(document).on('click', '#taskList li', function(){
+            $(document).on('click', '#taskList li span', function(){
 
                 $(this).toggleClass("text-decoration-line-through");
 
@@ -139,6 +147,24 @@ echo "<li class=\"list-group-item $klase\" data-id=\"$ieraksts->id\">" . htmlspe
                     encode: true,
                 }).done(function (data) {
                     console.log(data);
+                });
+
+            });
+
+            $(document).on('click', '#taskList li .btn-outline-danger', function(){
+
+                $.ajax({
+                    type:'POST',
+                    url: 'delete_list_item.php',
+                    data: {
+                        ieraksts_id: $(this).attr('data-id'),
+                        saraksts_id: saraksts_id,
+                    },
+                    dataType: 'json',
+                    encode: true,
+                }).done(function (data) {
+                    console.log(data);
+                    $(this).parent().remove();
                 });
 
             });
