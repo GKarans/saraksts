@@ -1,7 +1,7 @@
 <?php 
     session_start();
 # https://github.com/Filipssh/saraksts/commit/95a16b6bddc76f398bedb84777e2fd45b9889221
-    require_once "connection.php";
+    require_once "db/connection.php";
 
     if(isset($_SESSION['username'])){
         header("Location: home.php");

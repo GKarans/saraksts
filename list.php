@@ -1,6 +1,6 @@
 <?php
     session_start();
-    include_once "connection.php";
+    include_once "db/connection.php";
 
     if(empty($_SESSION['username'])){
         header("Location: login.php");
@@ -93,7 +93,7 @@
                      */ 
                     $.ajax({ 
                         type:'POST',
-                        url: 'insert_list_item.php',
+                        url: 'db/list_item/insert.php',
                         data: {
                             teksts: teksts.value,
                             saraksts_id: saraksts_id,
@@ -114,6 +114,7 @@
                             );
                             li.innerHTML = '<span> '+ teksts.value +' </span><button class="btn btn-outline-danger" data-id="' + data.id + '">X</button>';
                             li.setAttribute('data-id', data.id);
+                            teksts.value = '';
 
                             saraksts.appendChild(li);
                         }
@@ -138,7 +139,7 @@
 
                 $.ajax({
                     type:'POST',
-                    url: 'toggle_list_item.php',
+                    url: 'db/list_item/toggle.php',
                     data: {
                         ieraksts_id: $(this).attr('data-id'),
                         saraksts_id: saraksts_id,
@@ -155,7 +156,7 @@
 
                 $.ajax({
                     type:'POST',
-                    url: 'delete_list_item.php',
+                    url: 'db/list_item/delete.php',
                     data: {
                         ieraksts_id: $(this).attr('data-id'),
                         saraksts_id: saraksts_id,

@@ -1,6 +1,6 @@
 <?php
     session_start();
-    require_once "connection.php";
+    require_once "db/connection.php";
 
     // ja lietotājs nav autorizējies, tad pārvirzām uz autorizācijas lapu
     if(empty($_SESSION['username'])){
