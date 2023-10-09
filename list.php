@@ -50,8 +50,8 @@
             <div class="row">
                 <div class="col-md-6 offset-md-3">
                     <div class="input-group mb-3">
-                        <input type="text" id="task" class="form-control" placeholder="Add a new task">
-                        <button id="addTask" class="btn btn-primary">Add</button>
+                        <input type="text" id="task" class="form-control" placeholder="Jauns ieraksts">
+                        <button id="addTask" class="btn btn-primary">Pievienot</button>
                     </div>
                     <ul class="list-group" id="taskList">
                         <!-- Saraksta elementi tiks dinamiski ievietoti šeit -->
@@ -67,7 +67,8 @@
         $klase = ($ieraksts->izsvitrots == 1) ? $klase : '';
     ?>
     <li class="list-group-item d-flex justify-content-between align-items-center" data-id="<?php echo $ieraksts->id?>">
-        <span class="<?php echo $klase; ?>"><?php echo htmlspecialchars($ieraksts->teksts); ?></span>
+        <span class="me-auto <?php echo $klase; ?>"><?php echo htmlspecialchars($ieraksts->teksts); ?></span>
+        <button class="btn me-2 btn-outline-primary" data-id="<?php echo $ieraksts->id?>">rediģēt</button>
         <button class="btn btn-outline-danger" data-id="<?php echo $ieraksts->id?>">X</button>
     </li>
     <?php endwhile; ?>
@@ -112,7 +113,7 @@
                                 "justify-content-between",
                                 "align-items-center"
                             );
-                            li.innerHTML = '<span> '+ teksts.value +' </span><button class="btn btn-outline-danger" data-id="' + data.id + '">X</button>';
+                            li.innerHTML = '<span class="me-auto"> '+ teksts.value +' </span><button class="btn me-2 btn-outline-primary" data-id="' + data.id + '">rediģēt</button><button class="btn btn-outline-danger" data-id="' + data.id + '">X</button>';
                             li.setAttribute('data-id', data.id);
                             teksts.value = '';
 
@@ -134,7 +135,6 @@
             // Izmantojot jQuery, deliģējam document objektu klausīties klikšķi uz kādu saraksta elementu
             // https://learn.jquery.com/events/event-delegation/
             $(document).on('click', '#taskList li span', function(){
-
                 $(this).toggleClass("text-decoration-line-through");
 
                 $.ajax({
@@ -152,22 +152,75 @@
 
             });
 
+            /*
+             * Ieraksta dzēšana. 
+             */
             $(document).on('click', '#taskList li .btn-outline-danger', function(){
 
+                const ieraksts = $(this);
                 $.ajax({
                     type:'POST',
                     url: 'db/list_item/delete.php',
                     data: {
-                        ieraksts_id: $(this).attr('data-id'),
+                        ieraksts_id: ieraksts.attr('data-id'),
                         saraksts_id: saraksts_id,
                     },
                     dataType: 'json',
                     encode: true,
                 }).done(function (data) {
                     console.log(data);
-                    $(this).parent().remove();
+                    ieraksts.parent().remove();
                 });
 
+            });
+
+            /*
+             * Ieraksta rediģēšana – ievades lauka parādīšana.
+             * Ieraksta teksts tiek aizvietots ar input lauku, kurā var rediģēt tekstu
+             */
+            $(document).on('click','#taskList li .btn-outline-primary', function(){
+                const teksts = $(this).siblings("span").text();
+                const id = $(this).attr('data-id');
+                $(this).attr('disabled',true);// neļaujam lietotājam klikšķināt uz "rediģēt" atkārtoti
+
+                $(this).siblings("span").html('<div class="input-group"><input type="text" class="form-control" value="'+ teksts +'"><button class="btn btn-primary" data-id="'+ id +'">Saglabāt</button></div>');
+
+            });
+
+            /*
+             * Izsvītrošanas funkcionalitātes atcelšana elementiem dziļāk par <span> elementu
+             */
+            $(document).on('click','#taskList li span * ', function( event ){
+                event.stopPropagation();
+            });
+
+            /*
+             * Rediģētā ieraksta saglabāšana.
+             * Nododam serverim tekstu, kuru ievadīja lietotājs, ieraksta id un saraksta id
+             * Sagaidot atbildi no servera, aizvietojam input lauku ar jauno tekstu
+             */
+            $(document).on('click','#taskList li span .btn-primary', function(){
+                const text = $(this).siblings("input").val();
+                const ievade = $(this);
+                
+                $.ajax({
+                    type:'POST',
+                    url: 'db/list_item/update.php',
+                    data: {
+                        ieraksts_id: ievade.attr('data-id'),
+                        saraksts_id: saraksts_id,
+                        text: text,
+                    },
+                    dataType: 'json',
+                    encode: true,
+                }).done(function (data) {
+                    console.log(data);
+
+                    // atgriežam pogai "rediģēt" iespēju tikt klikšķinātai
+                    ievade.parents('li').children('.btn-outline-primary').attr('disabled', false);
+                    
+                    ievade.parents('span').text(data.text);
+                });
             });
 
         </script>
